@@ -14,8 +14,9 @@ Notes
 ---
 
 - There is only a single Consul server running - we should run multiple to ensure HA.
-
-
+- There is no Postgres failover - this is merely handling the monitoring of 2 databases as a POC.
+- There could be a liveness probe sent directly from the server, but I like the idea that we could drop this on top of any system (RDS, DO, GCP, etc), and it will "Just work". Since we are using native Postgres, it works with an Postgres-compatible docker image - no extensions required.
+- I've written everything on the consul side in shell scripts for now. Could be moved to Rust/Go/Python/etc for better DX.
 
 Ideas
 ---
