@@ -1,20 +1,20 @@
+# Postgres with Consul
 
+Monitoring 2 Postgres databases (see docker-compose), using native PG commands.
 
+Both databases are monitored by consul using a healthcheck.
 
-# Todo
+- Consul docker image is built with `postgres-client` so that it can probe Postgres from the server
+- Database is checked every 3s [here](https://github.com/kiwicopple/consul-postgres/blob/cb186d3243b86aa4fdd96286c3220c332459c6cc/consul/consul.d/postgres1.json#L7)
+    - This script checks `pg_isready` [here](https://github.com/kiwicopple/consul-postgres/blob/main/consul/consul.d/pg_check.sh)
+- If the datbase goes down then it triggers a watch script [here](https://github.com/kiwicopple/consul-postgres/blob/cb186d3243b86aa4fdd96286c3220c332459c6cc/consul/consul.d/postgres1.json#L37)
+  - This watcher inserts the state change into Consul KV [here](https://github.com/kiwicopple/consul-postgres/blob/main/consul/consul.d/handle_state_change.sh), but it could really call any endpoint.
 
-The Postgres check should uses psql script check (see example here: https://www.consul.io/docs/discovery/checks#check-definition)
-To do this, Consul needs to be loaded with psql-client then run pg_isready.
-We can probably use the consul docker image as a base then build on top
+Notes
+---
 
+- There is only a single Consul server running - we should run multiple to ensure HA.
 
-PG1 is started as primary
-see: `pg1/data/postgresql.conf > REPLICATION`
-
-```
-max_wal_senders = 10	
-max_replication_slots = 10
-```
 
 
 Ideas
