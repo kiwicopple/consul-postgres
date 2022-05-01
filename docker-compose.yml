@@ -1,0 +1,78 @@
+
+version: '3'
+
+services:
+
+  consul-server: 
+    container_name: supabase-consul
+    build: 
+      context: ./consul
+      dockerfile: Dockerfile
+    networks:
+      - postgres-ha
+    ports:
+      - "8500:8500" # UI
+      - "8600:8600/udp"
+    command: "agent -server -bootstrap-expect 1 -ui -client 0.0.0.0 -config-dir /usr/local/bin/consul.d -enable-local-script-checks"
+
+  db1:
+    container_name: db1
+    image: supabase/postgres:14.1.0.21
+    networks:
+      - postgres-ha
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./postgres/mnt/conf:/var/lib/postgresql/custom
+      - ./postgres/mnt/scripts:/docker-entrypoint-initdb.d
+    command:
+      - "postgres"
+      - "-c"
+      - "hba_file=/var/lib/postgresql/custom/pg_hba.conf"
+      - "-c"
+      - "wal_level=logical"
+      - "-c"
+      - "max_wal_senders=10"
+      - "-c"
+      - "max_replication_slots=10"
+      # - "-c"
+      # - "hot_standby=off"
+    
+
+  db2:
+    container_name: db2
+    image: supabase/postgres:14.1.0.21
+    networks:
+      - postgres-ha
+    restart: unless-stopped
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./postgres/mnt/conf:/var/lib/postgresql/custom
+      - ./postgres/mnt/scripts:/docker-entrypoint-initdb.d
+    command:
+      - "postgres"
+      - "-c"
+      - "hba_file=/var/lib/postgresql/custom/pg_hba.conf"
+      # - "-c"
+      # - "wal_level=replica"
+      - "-c"
+      - "max_wal_senders=10"
+      - "-c"
+      - "max_replication_slots=10"
+      - "-c"
+      - "hot_standby=on"
+      - "-c"
+      - "primary_conninfo=postgresql://replication:POSTGRES_REPLICATION_PASSWORD@db1/postgres"
+      - "-c"
+      - "primary_slot_name=on"
+      # - "-c"
+      # - "promote_trigger_file=on"
+
+networks:
+  postgres-ha:

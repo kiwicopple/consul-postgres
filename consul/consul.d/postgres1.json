@@ -1,0 +1,43 @@
+{
+  "service": {
+    "id": "db1",
+    "name": "db1",
+    "checks": [
+      {
+        "id": "db1-isready",
+        "name": "PG is ready",
+        "args": [
+          "/usr/local/bin/consul.d/pg_check.sh",
+          "db1",
+          "5432",
+          "postgres",
+          "postgres",
+          "postgres"
+        ],
+        "interval": "3s",
+        "timeout": "10s"
+      },
+      {
+        "id": "db1-isprimary",
+        "name": "PG is primary",
+        "args": [
+          "/usr/local/bin/consul.d/is_primary.sh",
+          "db1",
+          "5432",
+          "postgres",
+          "postgres",
+          "postgres"
+        ],
+        "interval": "3s",
+        "timeout": "10s"
+      }
+    ]
+  },
+  "watches": [
+    {
+      "type": "checks",
+      "service": "db1",
+      "args": ["/usr/local/bin/consul.d/handle_state_change.sh", "db1"]
+    }
+  ]
+}

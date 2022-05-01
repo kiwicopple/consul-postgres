@@ -1,0 +1,3 @@
+consul/consul.d/hostname
+consul/consul.d/hosts
+consul/consul.d/resolv.conf
