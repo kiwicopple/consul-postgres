@@ -2,6 +2,10 @@
 
 Monitoring 2 Postgres databases (see docker-compose), using native PG commands.
 
+
+https://user-images.githubusercontent.com/10214025/166162293-2b283faf-4469-47f0-87d7-ec720792deba.mov
+
+
 Both databases are monitored by consul using a healthcheck.
 
 - Consul docker image is built with `postgres-client` so that it can probe Postgres from the server
