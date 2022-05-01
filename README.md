@@ -1,13 +1,23 @@
 # Postgres with Consul
 
-Monitoring 2 Postgres databases (see docker-compose), using native PG commands.
+Monitoring 2 Postgres databases, using native PG commands.
 
 
 https://user-images.githubusercontent.com/10214025/166162293-2b283faf-4469-47f0-87d7-ec720792deba.mov
 
 
-Both databases are monitored by consul using a healthcheck.
+Usage:
 
+```bash
+# Start docker, force full refresh
+docker-compose up --force-recreate --remove-orphans --build
+
+# Tear down
+docker-compose down --volumes --remove-orphans
+```
+
+- Setup uses 2 Postgres databases and one consul server/agent (see docker-compose).
+- Both databases are monitored by consul using a healthcheck.
 - Consul docker image is built with `postgres-client` so that it can probe Postgres from the server
 - Database is checked every 3s [here](https://github.com/kiwicopple/consul-postgres/blob/cb186d3243b86aa4fdd96286c3220c332459c6cc/consul/consul.d/postgres1.json#L7)
     - This script checks `pg_isready` [here](https://github.com/kiwicopple/consul-postgres/blob/main/consul/consul.d/pg_check.sh)
